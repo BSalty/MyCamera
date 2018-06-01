@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MyCamera.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CameraURL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LocalRawImagesFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">d:\Security Camera Downloads</Value>
+    </Setting>
+    <Setting Name="LocalFinalImagesFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">d:\Security Camera AVIs\</Value>
+    </Setting>
+    <Setting Name="ConverterApplicationFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Program Files (x86)\FileConverter\Converter.exe</Value>
+    </Setting>
+    <Setting Name="CameraUserName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="CameraPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>
