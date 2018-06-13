@@ -20,5 +20,8 @@
     <Setting Name="CameraPassword" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="LastFileDownLoadedDropboxFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Bill\MyCamera\LastFileDownloaded.txt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

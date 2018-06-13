@@ -18,7 +18,6 @@ namespace MyCamera
 
         public void ImportFromCamera()
         {
-
             using (var client = new WebClient())
             {
                 string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(Properties.Settings.Default.CameraUserName + ":" + Properties.Settings.Default.CameraPassword));
@@ -127,7 +126,8 @@ namespace MyCamera
 
         private string GetLastFileDownloadedFileName()
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LastFileDownloaded.txt");
+            return Path.Combine(GetDropboxFolder(), Properties.Settings.Default.LastFileDownLoadedDropboxFile);
+            //return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LastFileDownloaded.txt");
         }
 
 
@@ -145,6 +145,18 @@ namespace MyCamera
                 if (File.Exists(rawFullFileName))
                     File.Delete(rawFullFileName);
             }
+        }
+
+        private string GetDropboxFolder()
+        {
+            var infoPath = @"Dropbox\info.json";
+            var jsonPath = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), infoPath);
+            if (!File.Exists(jsonPath))
+                jsonPath = Path.Combine(Environment.GetEnvironmentVariable("AppData"), infoPath);
+            if (!File.Exists(jsonPath))
+                throw new Exception("Dropbox could not be found!");
+
+            return File.ReadAllText(jsonPath).Split('\"')[5].Replace(@"\\", @"\");
         }
     }
 }
