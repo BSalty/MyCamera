@@ -76,5 +76,14 @@ namespace MyCamera.Properties {
                 return ((string)(this["CameraPassword"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Bill\\MyCamera\\LastFileDownloaded.txt")]
+        public string LastFileDownLoadedDropboxFile {
+            get {
+                return ((string)(this["LastFileDownLoadedDropboxFile"]));
+            }
+        }
     }
 }
