@@ -126,7 +126,8 @@ namespace MyCamera
 
         private string GetLastFileDownloadedFileName()
         {
-            return Path.Combine(GetDropboxFolder(), Properties.Settings.Default.LastFileDownLoadedDropboxFile);
+            string fileName =  Path.Combine(GetDropboxFolder(), Properties.Settings.Default.LastFileDownLoadedDropboxFile);
+            return fileName;
             //return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LastFileDownloaded.txt");
         }
 
@@ -154,9 +155,22 @@ namespace MyCamera
             if (!File.Exists(jsonPath))
                 jsonPath = Path.Combine(Environment.GetEnvironmentVariable("AppData"), infoPath);
             if (!File.Exists(jsonPath))
-                throw new Exception("Dropbox could not be found!");
-
-            return File.ReadAllText(jsonPath).Split('\"')[5].Replace(@"\\", @"\");
+                throw new Exception("Dropbox Info.json could not be found!");
+            //string test = File.ReadAllText(jsonPath);
+            //string[] t2 = test.Split('\"');
+            //return File.ReadAllText(jsonPath).Split('\"')[9].Replace(@"\\", @"\");
+            string folder = "";
+            foreach (string test in File.ReadAllText(jsonPath).Split('\"'))
+            {
+                if (test.ToLower().StartsWith("c:"))
+                {
+                    folder = test;
+                    break;
+                }
+            }
+            if(String.IsNullOrEmpty(folder))
+                throw new Exception("Dropbox folder could not be found!");
+            return folder;
         }
     }
 }
