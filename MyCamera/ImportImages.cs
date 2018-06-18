@@ -128,7 +128,6 @@ namespace MyCamera
         {
             string fileName =  Path.Combine(GetDropboxFolder(), Properties.Settings.Default.LastFileDownLoadedDropboxFile);
             return fileName;
-            //return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LastFileDownloaded.txt");
         }
 
 
