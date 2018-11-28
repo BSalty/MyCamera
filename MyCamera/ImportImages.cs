@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -133,6 +135,7 @@ namespace MyCamera
 
         public void SaveConvertedImages()
         {
+            UpdateAllFileDateTimes(Properties.Settings.Default.LocalRawImagesFolder);
             string aviDestFile;
             string rawFullFileName;
             foreach(string aviSrcFullFileName in Directory.GetFiles(Properties.Settings.Default.LocalRawImagesFolder, "*.avi"))
@@ -170,6 +173,50 @@ namespace MyCamera
             if(String.IsNullOrEmpty(folder))
                 throw new Exception("Dropbox folder could not be found!");
             return folder;
+        }
+
+        private void UpdateAllFileDateTimes(string dir)
+        {
+            string fileTouchExe = Path.Combine(Properties.Settings.Default.LocalRawImagesFolder, @"FileTouch.exe");
+            if (!File.Exists(fileTouchExe))
+                throw new Exception(@"FileTouch.exe could not be found!");
+
+            CultureInfo enUS = new CultureInfo("en-US");
+            string arg;
+            string fileName;
+            string dt;
+            string tm;
+            DateTime testDate;
+            foreach (string aviSrcFullFileName in Directory.GetFiles(dir, "*.avi"))
+            {
+                Console.WriteLine(String.Format("Touching {0}...", aviSrcFullFileName));
+                fileName = aviSrcFullFileName.Substring(aviSrcFullFileName.LastIndexOf(@"\") + 1);
+                if (fileName.Length == 17)
+                {
+                    // "180610_213518"
+                    // mm-dd-yyyy
+                    dt = string.Format("{0}-{1}-20{2}", fileName.Substring(2,2), fileName.Substring(4, 2), fileName.Substring(0, 2));
+                    // hh:mm:ss
+                    tm = string.Format("{0}:{1}:{2}", fileName.Substring(7, 2), fileName.Substring(9, 2), fileName.Substring(11, 2));
+                    if (DateTime.TryParseExact(dt + " " + tm, @"MM-dd-yyyy HH:mm:ss", enUS, DateTimeStyles.None, out testDate))
+                    {
+                        if (TimeZoneInfo.Local.IsDaylightSavingTime(testDate))
+                        {
+                            testDate = testDate.AddHours(-1);
+                            dt = string.Format("{0:MM-dd-yyyy}", testDate);
+                            tm = string.Format("{0:HH:mm:ss}", testDate);
+                        }
+                        arg = String.Format("/W /C /D {0} /T {1} \"{2}\"", dt, tm, aviSrcFullFileName);
+                        Process ft = new Process();
+                        ft.StartInfo.UseShellExecute = false;
+                        ft.StartInfo.FileName = fileTouchExe;
+                        ft.StartInfo.Arguments = arg;
+                        ft.StartInfo.CreateNoWindow = true;
+                        ft.Start();
+                    }
+                    
+                }
+            }
         }
     }
 }

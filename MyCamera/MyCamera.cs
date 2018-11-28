@@ -10,7 +10,7 @@ namespace MyCamera
         static void Main(string[] args)
         {
             string msg;
-            string msgCaption = "Security Caemra Processor";
+            string msgCaption = "Security Camera Processor";
             ImportImages ic = new ImportImages();
             ic.ImportFromCamera();
             if (Directory.GetFiles(Properties.Settings.Default.LocalRawImagesFolder).GetLength(0) > 0)
