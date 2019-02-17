@@ -133,21 +133,52 @@ namespace MyCamera
         }
 
 
-        public void SaveConvertedImages()
+        public bool SaveConvertedImages()
         {
-            UpdateAllFileDateTimes(Properties.Settings.Default.LocalRawImagesFolder);
+            if (!UpdateAllFileDateTimes(Properties.Settings.Default.LocalRawImagesFolder))
+                return false;
+
             string aviDestFile;
             string rawFullFileName;
+            bool quit = false;
             foreach(string aviSrcFullFileName in Directory.GetFiles(Properties.Settings.Default.LocalRawImagesFolder, "*.avi"))
             {
-                aviDestFile = aviSrcFullFileName.Substring(aviSrcFullFileName.LastIndexOf(@"\") + 1);
-                Console.WriteLine(String.Format("Moving {0}...", aviSrcFullFileName));
-                File.Move(aviSrcFullFileName, Path.Combine(Properties.Settings.Default.LocalFinalImagesFolder, aviDestFile));
-                FilesSaved++;
-                rawFullFileName = aviSrcFullFileName.Substring(0, aviSrcFullFileName.Length - 4) + ".264";
-                if (File.Exists(rawFullFileName))
-                    File.Delete(rawFullFileName);
+                bool retry = true;
+                int retries = 0;
+                while (retry)
+                {
+                    try
+                    {
+                        aviDestFile = aviSrcFullFileName.Substring(aviSrcFullFileName.LastIndexOf(@"\") + 1);
+                        Console.WriteLine(String.Format("Moving {0}...", aviSrcFullFileName));
+                        File.Move(aviSrcFullFileName, Path.Combine(Properties.Settings.Default.LocalFinalImagesFolder, aviDestFile));
+                        FilesSaved++;
+                        rawFullFileName = aviSrcFullFileName.Substring(0, aviSrcFullFileName.Length - 4) + ".264";
+                        if (File.Exists(rawFullFileName))
+                            File.Delete(rawFullFileName);
+                        retry = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (retries <= 5)
+                        {
+                            retries++;
+                        }
+                        else
+                        {
+                            retry = false;
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Press <Enter> to continue or <End> to quit...");
+                            ConsoleKey key = ConsoleKey.NoName;
+                            while (key != ConsoleKey.Enter && key != ConsoleKey.End)
+                                key = Console.ReadKey().Key;
+                            if (key == ConsoleKey.End)
+                                quit = true;
+                        }
+                    }
+                }
             }
+            return quit;
         }
 
         private string GetDropboxFolder()
@@ -175,7 +206,7 @@ namespace MyCamera
             return folder;
         }
 
-        private void UpdateAllFileDateTimes(string dir)
+        private bool UpdateAllFileDateTimes(string dir)
         {
             string fileTouchExe = Path.Combine(Properties.Settings.Default.LocalRawImagesFolder, @"FileTouch.exe");
             if (!File.Exists(fileTouchExe))
@@ -187,6 +218,7 @@ namespace MyCamera
             string dt;
             string tm;
             DateTime testDate;
+            bool quit = false;
             foreach (string aviSrcFullFileName in Directory.GetFiles(dir, "*.avi"))
             {
                 Console.WriteLine(String.Format("Touching {0}...", aviSrcFullFileName));
@@ -206,17 +238,33 @@ namespace MyCamera
                             dt = string.Format("{0:MM-dd-yyyy}", testDate);
                             tm = string.Format("{0:HH:mm:ss}", testDate);
                         }
-                        arg = String.Format("/W /C /D {0} /T {1} \"{2}\"", dt, tm, aviSrcFullFileName);
-                        Process ft = new Process();
-                        ft.StartInfo.UseShellExecute = false;
-                        ft.StartInfo.FileName = fileTouchExe;
-                        ft.StartInfo.Arguments = arg;
-                        ft.StartInfo.CreateNoWindow = true;
-                        ft.Start();
+                        try
+                        {
+                            arg = String.Format("/W /C /D {0} /T {1} \"{2}\"", dt, tm, aviSrcFullFileName);
+                            Process ft = new Process();
+                            ft.StartInfo.UseShellExecute = false;
+                            ft.StartInfo.FileName = fileTouchExe;
+                            ft.StartInfo.Arguments = arg;
+                            ft.StartInfo.CreateNoWindow = true;
+                            ft.Start();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.WriteLine("Press <Enter> to continue or <End> to quit...");
+                            ConsoleKey key = ConsoleKey.NoName;
+                            while (key != ConsoleKey.Enter && key != ConsoleKey.End)
+                                key = Console.ReadKey().Key;
+                            if (key == ConsoleKey.End)
+                                quit = true;
+                        }
                     }
                     
                 }
+                if (quit)
+                    break;
             }
+            return !quit;
         }
     }
 }
