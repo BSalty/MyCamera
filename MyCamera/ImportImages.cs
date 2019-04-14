@@ -232,12 +232,12 @@ namespace MyCamera
                     tm = string.Format("{0}:{1}:{2}", fileName.Substring(7, 2), fileName.Substring(9, 2), fileName.Substring(11, 2));
                     if (DateTime.TryParseExact(dt + " " + tm, @"MM-dd-yyyy HH:mm:ss", enUS, DateTimeStyles.None, out testDate))
                     {
-                        if (TimeZoneInfo.Local.IsDaylightSavingTime(testDate))
-                        {
-                            testDate = testDate.AddHours(-1);
-                            dt = string.Format("{0:MM-dd-yyyy}", testDate);
-                            tm = string.Format("{0:HH:mm:ss}", testDate);
-                        }
+                        //if (TimeZoneInfo.Local.IsDaylightSavingTime(testDate))
+                        //{
+                        //    testDate = testDate.AddHours(-1);
+                        //    dt = string.Format("{0:MM-dd-yyyy}", testDate);
+                        //    tm = string.Format("{0:HH:mm:ss}", testDate);
+                        //}
                         try
                         {
                             arg = String.Format("/W /C /D {0} /T {1} \"{2}\"", dt, tm, aviSrcFullFileName);
