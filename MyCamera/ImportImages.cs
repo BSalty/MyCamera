@@ -247,6 +247,7 @@ namespace MyCamera
                             ft.StartInfo.Arguments = arg;
                             ft.StartInfo.CreateNoWindow = true;
                             ft.Start();
+                            ft.WaitForExit();
                         }
                         catch (Exception ex)
                         {
